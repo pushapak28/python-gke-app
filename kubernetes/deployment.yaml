@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: python-app
-        image: gcr.io/reliable-mode-458006-h5/python-app:latest
+        image: docker.io/pkarma10/ci_cd:latest
         ports:
         - containerPort: 8080
         resources:
