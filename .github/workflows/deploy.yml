@@ -7,7 +7,7 @@ on:
 
 env:
   DOCKER_REGISTRY: docker.io
-  DOCKER_REPO: your-username/your-repository-name  # Your Docker Hub repository
+  DOCKER_REPO: pkarma10/ci_cd  # Your Docker Hub repository
   IMAGE_NAME: python-app  # Image name you want to use
   IMAGE_TAG: latest  # Tag for the image, you can use a commit hash or version
 
