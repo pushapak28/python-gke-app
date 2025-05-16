@@ -8,12 +8,12 @@ on:
 env:
   DOCKER_REGISTRY: docker.io
   DOCKER_REPO: pkarma10/ci_cd  # Your Docker Hub repository
-  IMAGE_NAME: python-app  # Image name you want to use
-  IMAGE_TAG: latest  # Tag for the image, you can use a commit hash or version
+  IMAGE_NAME: python-app
+  IMAGE_TAG: latest
 
 jobs:
   build-push:
-    runs-on: ubuntu-latest  # GitHub Actions runner
+    runs-on: ubuntu-latest
 
     steps:
       # Step 1: Checkout source code
@@ -24,34 +24,37 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}  # Docker Hub username stored in GitHub secrets
-          password: ${{ secrets.DOCKER_PASSWORD }}  # Docker Hub password or Personal Access Token
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Step 3: Build the Docker image
+      # Step 3: Build Docker image
       - name: Build Docker image
         run: |
           docker build -t ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_REPO }}:${{ env.IMAGE_TAG }} .
-          # Build the image and tag it with 'latest' (or any tag like 'commit-sha', etc.)
 
-      # Step 4: Push Docker image to Docker Hub
+      # Step 4: Push Docker image
       - name: Push Docker image
         run: |
           docker push ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_REPO }}:${{ env.IMAGE_TAG }}
-          # Push the image to Docker Hub
 
-      # Optional: Deploy to Kubernetes (GKE or other cluster) with kubectl
+      # Step 5: Authenticate to GCP (correct method)
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      # Step 6: Set up gcloud CLI
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}  # GCP Project ID
-          service_account_key: ${{ secrets.GCP_SA_KEY }}  # GCP service account key
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
 
+      # Step 7: Get GKE credentials
       - name: Get GKE credentials
         run: |
           gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER }} --zone ${{ secrets.GKE_ZONE }}
-          # Authenticate to your GKE cluster, replace with your correct GKE cluster and zone
 
-      - name: Deploy to GKE with kubectl
+      # Step 8: Deploy to GKE
+      - name: Deploy to GKE
         run: |
-          kubectl apply -f kubernetes/  # Apply Kubernetes manifests (Deployment, Service, etc.)
-          # Ensure kubernetes manifests are in the 'kubernetes/' folder and ready to be applied
+          kubectl apply -f kubernetes/
