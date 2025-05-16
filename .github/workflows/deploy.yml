@@ -41,8 +41,10 @@ jobs:
 
     - name: Get GKE credentials
       run: |
-        gcloud container clusters get-credentials ${{ env.GKE_CLUSTER }} --zone ${{ env.GKE_ZONE }}
+        gcloud container clusters get-credentials ${{ env.GKE_CLUSTER }} --zone ${{ env.GKE_ZONE }} --project ${{ secrets.GCP_PROJECT_ID }}
 
     - name: Deploy to GKE with kubectl
       run: |
         kubectl apply -f kubernetes/
+        kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} ${{
+          env.DEPLOYMENT_NAME }}=${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPO }}/${{ env.IMAGE_NAME }}:latest
