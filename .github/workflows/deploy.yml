@@ -62,4 +62,4 @@ jobs:
       # Step 9: Deploy to GKE
       - name: Deploy to GKE with kubectl
         run: |
-          kubectl apply -f kubernetes/
+          kubectl get ns
